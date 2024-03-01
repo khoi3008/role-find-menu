@@ -1,0 +1,5 @@
+is_global = true
+build_property.RootNamespace = RoleBasedAuthorization
+build_property.ProjectDir = E:\dotnet\RoleBasedAuth_App\RoleBasedAuthorization\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
