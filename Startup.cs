@@ -8,17 +8,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using RoleBasedAuthorization.Models;
+
+using RoleBasedAuthorization.list;
 
 namespace RoleBasedAuthorization
 {
     public class Startup
     {
         public IConfiguration Configuration { get; }
+    
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+   
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -28,7 +31,7 @@ namespace RoleBasedAuthorization
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<Ikasecurity3pContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"))
                     );
@@ -38,7 +41,7 @@ namespace RoleBasedAuthorization
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Ikasecurity3pContext dbContext)
         {
             // Xác định môi trường
             if (env.IsDevelopment())
@@ -54,6 +57,7 @@ namespace RoleBasedAuthorization
             if (dbContext.Database.CanConnect())
             {
                 Console.WriteLine("Connected to the database!");
+         
             }
             else
             {

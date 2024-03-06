@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
-using RoleBasedAuthorization.Models;
+using RoleBasedAuthorization.list;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace RoleBasedAuthorization
                 return;
             }
 
-            var menus = JsonConvert.DeserializeObject<List<Menus>>(filterContext.HttpContext.Session.GetString("menus")!);
+            var menus = JsonConvert.DeserializeObject<List<TblMenu>>(filterContext.HttpContext.Session.GetString("menus")!);
             var controllerName = filterContext.RouteData.Values["controller"];
             var actionName = filterContext.RouteData.Values["action"];
             string url = "/" + controllerName + "/" + actionName;

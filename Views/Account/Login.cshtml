@@ -84,7 +84,8 @@
             password: $('#password').val()
           },
           error: function (result) {
-            alert("There is a Problem, Try Again!");
+            alert("There is a Problem, Try Again!",result);
+            console.log(result);
           },
           success: function (result) {
             console.log(result);

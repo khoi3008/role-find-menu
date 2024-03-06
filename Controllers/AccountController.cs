@@ -5,79 +5,117 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using RoleBasedAuthorization.Models;
+using RoleBasedAuthorization.list;
+
 
 namespace RoleBasedAuthorization.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public AccountController(ApplicationDbContext db)
+        private readonly Ikasecurity3pContext _db;
+        private readonly ILogger<AccountController> _logger;
+        public AccountController(Ikasecurity3pContext db, ILogger<AccountController> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
-        // ApplicationDbContext db = new ApplicationDbContext();
-
         public IActionResult Login()
+
         {
             return View();
         }
 
-        public ActionResult Validate(Admins admin)
+      public ActionResult Validate(string email, string password)
+{
+    var _admin = _db.TblUserAccounts.FirstOrDefault(s => s.Email == email);
+    if (_admin != null)
+    {
+        if (VerifyPassword(password, _admin.PasswordHash!))
         {
-            var _admin = _db.Admins.Where(s => s.Email == admin.Email).FirstOrDefault();
-            if (_admin != null)
+            HttpContext.Session.SetString("email", _admin.Email!);
+            HttpContext.Session.SetString("UserName", _admin.UserName);
+            HttpContext.Session.SetString("name", _admin.FullName!);
+
+            string UserName = HttpContext.Session.GetString("UserName")!;
+
+            List<TblUserRole> menus = _db.TblUserRoles.Where(u => u.UserName == UserName).ToList();
+
+            // Kiểm tra nếu không có menu nào được trả về từ cơ sở dữ liệu
+            if (menus.Any())
             {
-                if (_admin.Password == admin.Password)
+                var sb = new StringBuilder();
+                foreach (var menu in menus)
                 {
-                    HttpContext.Session.SetString("email", _admin.Email);
-                    HttpContext.Session.SetInt32("id", _admin.Id);
-                    HttpContext.Session.SetInt32("role_id", (int)_admin.RolesId!);
-                    HttpContext.Session.SetString("name", _admin.FullName);
-
-
-                    int roleId = (int)HttpContext.Session.GetInt32("role_id")!;
-                    List<Menus> menus = _db.LinkRolesMenus.Where(s => s.RolesId == roleId).Select(s => s.Menus).ToList();
-
-                    DataSet ds = new DataSet();
-                    ds = ToDataSet(menus);
+                    List<TblMenu> menu1 = _db.TblMenuRoles.Where(u => u.RoleName == menu.RoleName).Select(u => u.Menu).ToList();
+                    DataSet ds = ToDataSet(menu1);
                     DataTable table = ds.Tables[0];
-                    DataRow[] parentMenus = table.Select("ParentId909= 0");
+                    DataRow[] parentMenus = table.Select("ParentId = 0");
 
-                    var sb = new StringBuilder();
                     string menuString = GenerateUL(parentMenus, table, sb);
+                    _logger.LogInformation("Before setting menuString in session: " + HttpContext.Session.GetString("menuString"));
+                    if (!string.IsNullOrEmpty(menuString))
+                    {
+                        HttpContext.Session.SetString("menuString", menuString);
+                    }
+                    _logger.LogInformation("After setting menuString in session: " + HttpContext.Session.GetString("menuString"));
 
-                    HttpContext.Session.SetString("menuString", menuString);
-                    HttpContext.Session.SetString("menus", JsonConvert.SerializeObject(menus));
-
-                    return Json(new { status = true, message = "Login Successfull!" });
-                }
-                else
-                {
-                    return Json(new { status = true, message = "Invalid Password!" });
+                    HttpContext.Session.SetString("menus", JsonConvert.SerializeObject(menu1));
                 }
             }
             else
             {
-                return Json(new { status = false, message = "Invalid Email!" });
+                HttpContext.Session.Remove("menuString"); // Xóa menuString nếu không có menu nào
+                _logger.LogInformation("No menu found for user.");
+            }
+
+            return Json(new { status = true, message = "Login Successful!" });
+        }
+        else
+        {
+            return Json(new { status = false, message = "Invalid Password!" });
+        }
+    }
+    else
+    {
+        return Json(new { status = false, message = "Invalid Email!" });
+    }
+}
+
+
+        private bool VerifyPassword(string inputPassword, string storedPasswordHash)
+        {
+            try
+            {
+
+                byte[] storedHashBytes = Convert.FromBase64String(storedPasswordHash);
+                var hasher = new Argon2id(Encoding.UTF8.GetBytes(inputPassword));
+                hasher.Iterations = 1;
+                hasher.MemorySize = 4096;
+                hasher.DegreeOfParallelism = 1;
+
+                byte[] inputHashBytes = hasher.GetBytes(32);
+                return storedHashBytes.SequenceEqual(inputHashBytes);
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
 
         private string GenerateUL(DataRow[] menu, DataTable table, StringBuilder sb)
         {
+
             if (menu.Length > 0)
             {
+
                 StringBuilder quickAccessBuilder = new StringBuilder();
-
-
                 GenerateQuickAccess(menu, table, quickAccessBuilder);
-
-
                 sb.Append("<ul class='quick-access-menu'>");
                 sb.Append(quickAccessBuilder.ToString());
                 sb.Append("</ul>");
@@ -86,7 +124,6 @@ namespace RoleBasedAuthorization.Controllers
                     string url = dr["Url"].ToString()!;
                     string menuText = dr["Name"].ToString()!;
                     string icon = dr["Icon"].ToString()!;
-
                     if (url != "#")
                     {
                         string line = String.Format(@"<li><a href=""{0}""><i class=""{2}""></i> <span>{1}</span></a></li>", url, menuText, icon);
@@ -96,11 +133,8 @@ namespace RoleBasedAuthorization.Controllers
                     string pid = dr["Id"].ToString()!;
                     string parentId = dr["ParentId"].ToString()!;
 
-                    DataRow[] subMenu = table.Select(String.Format("ParentId = '{0}'", pid));
-                    if (subMenu.Length > 0)
-                    {
 
-                    }
+                    DataRow[] subMenu = table.Select(String.Format("ParentId = '{0}'", pid));
                     if (subMenu.Length > 0 && !pid.Equals(parentId))
                     {
                         string line = String.Format(@"<li class=""treeview""><a href=""#""><i class=""{0}""></i> <span style=""color: #a6bab8;:"">{1}</span><span class=""pull-right-container""><i class=""fa fa-angle-left pull-right""></i></span></a><ul class=""treeview-menu"">", icon, menuText);
@@ -117,14 +151,13 @@ namespace RoleBasedAuthorization.Controllers
         {
             foreach (DataRow dr in menu)
             {
-                string url = dr["Url"].ToString()!;          
+                string url = dr["Url"].ToString()!;
                 string icon = dr["Icon"].ToString()!;
                 string id = dr["Id"].ToString()!;
 
                 DataRow[] childMenus = table.Select($"ParentId = '{id}'");
                 if (childMenus.Length > 0)
                 {
-
                     foreach (var childMenus1 in childMenus)
                     {
                         string name = childMenus1["Name"].ToString()!;

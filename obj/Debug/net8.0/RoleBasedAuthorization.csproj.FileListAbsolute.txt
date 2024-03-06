@@ -253,3 +253,5 @@ E:\dotnet\RoleBasedAuth_App\RoleBasedAuthorization\obj\Debug\net8.0\refint\RoleB
 E:\dotnet\RoleBasedAuth_App\RoleBasedAuthorization\obj\Debug\net8.0\RoleBasedAuthorization.pdb
 E:\dotnet\RoleBasedAuth_App\RoleBasedAuthorization\obj\Debug\net8.0\RoleBasedAuthorization.genruntimeconfig.cache
 E:\dotnet\RoleBasedAuth_App\RoleBasedAuthorization\obj\Debug\net8.0\ref\RoleBasedAuthorization.dll
+E:\dotnet\RoleBasedAuth_App\RoleBasedAuthorization\bin\Debug\net8.0\Konscious.Security.Cryptography.Argon2.dll
+E:\dotnet\RoleBasedAuth_App\RoleBasedAuthorization\bin\Debug\net8.0\Konscious.Security.Cryptography.Blake2.dll

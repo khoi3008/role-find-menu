@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "19B3b3jnQNyVGN8zaKXlWDp0pafpjC1Jr0YYtzCHfSVpsh7rH8vMsv7Balmh96BE6OTEymk0JOysEaj0ZO8dvw==",
+  "dgSpecHash": "1wnwN8fpHh3ZDQTEZ7fXlfHTg0TZmIFmnpwxYqtSL0hLcl9h/26Eno+fqWuVa+L2+YFiQFBZ9ykJ/wfCw7ElZA==",
   "success": true,
   "projectFilePath": "E:\\dotnet\\RoleBasedAuth_App\\RoleBasedAuthorization\\RoleBasedAuthorization.csproj",
   "expectedPackageFiles": [
@@ -56,6 +56,8 @@
     "C:\\Users\\tranh\\.nuget\\packages\\humanizer.core.zh-cn\\2.14.1\\humanizer.core.zh-cn.2.14.1.nupkg.sha512",
     "C:\\Users\\tranh\\.nuget\\packages\\humanizer.core.zh-hans\\2.14.1\\humanizer.core.zh-hans.2.14.1.nupkg.sha512",
     "C:\\Users\\tranh\\.nuget\\packages\\humanizer.core.zh-hant\\2.14.1\\humanizer.core.zh-hant.2.14.1.nupkg.sha512",
+    "C:\\Users\\tranh\\.nuget\\packages\\konscious.security.cryptography.argon2\\1.3.0\\konscious.security.cryptography.argon2.1.3.0.nupkg.sha512",
+    "C:\\Users\\tranh\\.nuget\\packages\\konscious.security.cryptography.blake2\\1.1.0\\konscious.security.cryptography.blake2.1.1.0.nupkg.sha512",
     "C:\\Users\\tranh\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.0\\microsoft.aspnetcore.cryptography.internal.8.0.0.nupkg.sha512",
     "C:\\Users\\tranh\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\8.0.0\\microsoft.aspnetcore.cryptography.keyderivation.8.0.0.nupkg.sha512",
     "C:\\Users\\tranh\\.nuget\\packages\\microsoft.aspnetcore.dataprotection\\2.2.0\\microsoft.aspnetcore.dataprotection.2.2.0.nupkg.sha512",
