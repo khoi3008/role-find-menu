@@ -1,4 +1,4 @@
-﻿@* @model IEnumerable<RoleBasedAuthorization.Models.Admins>
+﻿@model IEnumerable<RoleBasedAuthorization.list.TblUserAccount>
 
 @{
     ViewData["Title"] = "Admins";
@@ -7,9 +7,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>
-        @ViewData["Title"]
-    </h1>
+    <h1>@ViewData["Title"]</h1>
 </section>
 <!-- Main content -->
 <section class="content container-fluid">
@@ -24,32 +22,22 @@
                     <table id="example2" class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>Id</th>
                                 <th>Full Name</th>
-                                <th>Email</th>
+                                <th>userName</th>
                                 <th>Role</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
+                            @foreach (var user in Model)
                             {
                                 <tr>
+                                    
+                                    <td>@user.FullName</td>
+                                    <td>@user.UserName</td>
+                         
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Id)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.FullName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Email)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Roles.Title)
-                                    </td>
-                                    <td>
-                                        <a href="/Admins/Edit/@item.Id">Edit</a> |
-                                        <a href="/Admins/Delete/@item.Id">Delete</a>
+                                        <!-- Add action buttons here -->
                                     </td>
                                 </tr>
                             }
@@ -61,14 +49,5 @@
     </div>
 </section>
 
-<script>
-    $(function () {
-    $('#example2').DataTable({
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : false,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : false
-    })
-  })</script> *@
+
+}

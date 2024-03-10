@@ -8,8 +8,8 @@ namespace RoleBasedAuthorization.Controllers
     {
         //MyDbContext db = new MyDbContext();
         private readonly Ikasecurity3pContext _db;
-          private readonly ILogger<AccountController> _logger;
-        public HomeController(Ikasecurity3pContext db , ILogger<AccountController> logger)
+        private readonly ILogger<AccountController> _logger;
+        public HomeController(Ikasecurity3pContext db, ILogger<AccountController> logger)
         {
             _db = db;
             _logger = logger;
@@ -21,8 +21,11 @@ namespace RoleBasedAuthorization.Controllers
             {
                 return Redirect("/Account/Login");
             }
-_logger.LogInformation("khôi trần");
 
+            var userName = HttpContext.Session.GetString("UserName");
+
+
+            ViewBag.UserName = userName;
             return View();
         }
 

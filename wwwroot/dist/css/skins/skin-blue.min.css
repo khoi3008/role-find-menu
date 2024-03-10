@@ -79,13 +79,14 @@
 
 }
 .skin-blue .sidebar a {
-  color: #b8c7ce;
+  color: #525f5e;
 }
 .skin-blue .sidebar a:hover {
   text-decoration: none;
 }
 .skin-blue .sidebar-menu .treeview-menu > li > a {
   color: #8aa4af;
+  cursor: pointer;
 }
 
 .skin-blue .sidebar-form {

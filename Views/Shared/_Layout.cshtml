@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
+
 <!DOCTYPE html>
 <html>
 
@@ -96,7 +97,7 @@
             </nav>
         </header>
         <!-- Left side column. contains the logo and sidebar -->
-        <aside class="main-sidebar" style="background-color: white;">
+        <aside class="main-sidebar" style="background-color: white ;">
             <!-- sidebar: style can be found in sidebar.less -->
             <section class="sidebar">
                 <!-- Sidebar user panel (optional) -->
@@ -124,10 +125,30 @@
                 <!-- /.search form -->
                 <!-- Sidebar Menu -->
                 <ul class="sidebar-menu" data-widget="tree" style="padding-top: 110px">
-                   
-                    <span class="header">Truy cập nhanh</span>
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; padding-left: 20px;padding-right: 20px;">
+                        <span class="header" style="color: #9d9d9b;">Truy cập nhanh</span>
+                        <i class="fa fa-search"></i>
+                    </div>
+
                     @Html.Raw(HttpContextAccessor?.HttpContext?.Session.GetString("menuString"))
+
+
                 </ul>
+                <div style="display: flex;  padding-top: 60%; align-items: center ">
+                    <div style="padding-right: 10px ; border-radius: 5%;">
+                        <img width="40" style="border-radius: 50%;" src="	http://ikachi.hyec.vn/assets/avartar-empty.jpg" alt="">
+                    </div>
+                    <div>
+
+                        <p>@Html.Raw(HttpContextAccessor?.HttpContext?.Session.GetString("UserName"))</p>
+                        <p style="color: #acb4bb;">
+                            @Html.Raw(HttpContextAccessor?.HttpContext?.Session.GetString("email"))</p>
+                    </div>
+
+
+
+                </div>
                 <!-- /.sidebar-menu -->
             </section>
             <!-- /.sidebar -->
@@ -138,10 +159,7 @@
         </div>
         <!-- /.content-wrapper -->
         <!-- Main Footer -->
-        <footer class="main-footer">
-            <!-- Default to the left -->
-            <strong>Copyright &copy; 2018 <a href="#">CodingInfinite</a>.</strong> All rights reserved.
-        </footer>
+
     </div>
     <!-- ./wrapper -->
     <!-- REQUIRED JS SCRIPTS -->
@@ -155,5 +173,38 @@
     <!-- AdminLTE App -->
     <script src="~/dist/js/adminlte.min.js"></script>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var links = document.querySelectorAll('a[data-function][data-type]');
+        links.forEach(function (link) {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                var functionName = link.getAttribute('data-function');
+                var nameEng = link.getAttribute('data-type');
+                var UserName = link.getAttribute('data-username');
+                var url = link.getAttribute('data-url');
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("CheckAccessSP", "Account")',
+                    data: {
+                        PermissionType: nameEng,
+                        FunctionName: functionName,
+                        UserName: UserName,
+                        url: url
+                    },
+                    success: function (response) {
+
+                        window.location.href = url;
+                    },
+                    error: function (xhr, status, error) {
+
+                        window.location.href = "Admins/Error";
+                    }
+                });
+            });
+        });
+    });
+
+</script>
 
 </html>

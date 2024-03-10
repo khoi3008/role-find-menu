@@ -1,7 +1,11 @@
 ﻿
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var userName = ViewBag.UserName as string;
 }
+    
+
+    
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -14,6 +18,7 @@
     <h1>This is Home Page</h1>
     <div class="row text-center" style="margin-top:100px">
         @*<img class="" src="~/images/logo.png" />*@
+        @userName
     </div>
     
 </section>

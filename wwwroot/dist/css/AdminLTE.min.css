@@ -662,6 +662,11 @@ a:focus {
 .sidebar-menu:hover {
   overflow: visible;
 }
+.sidebar-menu {
+  touch-action: pan-y;
+  overflow-y: auto ;
+  overscroll-behavior-y: contain;
+}
 .sidebar-form,
 .sidebar-menu > li.header {
   overflow: hidden;
