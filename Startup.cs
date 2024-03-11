@@ -16,17 +16,18 @@ namespace RoleBasedAuthorization
     public class Startup
     {
         public IConfiguration Configuration { get; }
-    
+
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-   
+
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddRazorPages();
             services.AddMemoryCache();
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -49,7 +50,7 @@ namespace RoleBasedAuthorization
                 app.UseDeveloperExceptionPage();
             }
             else
-            {   
+            {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
@@ -57,7 +58,7 @@ namespace RoleBasedAuthorization
             if (dbContext.Database.CanConnect())
             {
                 Console.WriteLine("Connected to the database!");
-         
+
             }
             else
             {
@@ -67,6 +68,7 @@ namespace RoleBasedAuthorization
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
+
 
             // Sử dụng cấu hình MVC routing
             app.UseMvc(routes =>

@@ -34,7 +34,7 @@ namespace RoleBasedAuthorization
             var actionName = filterContext.RouteData.Values["action"];
             string url = "/" + controllerName + "/" + actionName;
 
-            if (!menus!.Where(s => s.Url == url).Any())
+            if (menus!.Where(s => s.Url == url).Any())
 
             {
                 filterContext.Result = new RedirectToRouteResult(

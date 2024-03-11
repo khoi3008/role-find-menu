@@ -32,12 +32,16 @@
                             @foreach (var user in Model)
                             {
                                 <tr>
-                                    
+
                                     <td>@user.FullName</td>
                                     <td>@user.UserName</td>
-                         
+                                    <td>@user.Email</td>
+
                                     <td>
-                                        <!-- Add action buttons here -->
+                                        <a href='@Url.Action("Edit",  new { id = user.UserName })'
+                                            class="btn btn-primary">Edit</a>
+                                        <a href='@Url.Action("ResetPassword",  new { userEmail = user.Email })'
+                                            class="btn btn-primary">Reset Password</a>
                                     </td>
                                 </tr>
                             }
@@ -48,6 +52,3 @@
         </div>
     </div>
 </section>
-
-
-}

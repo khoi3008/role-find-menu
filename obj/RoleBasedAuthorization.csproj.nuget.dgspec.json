@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\dotnet\\RoleBasedAuth_App\\RoleBasedAuthorization\\RoleBasedAuthorization.csproj": {}
+    "D:\\WorkSpace\\BE\\role-find-menu\\RoleBasedAuthorization.csproj": {}
   },
   "projects": {
-    "E:\\dotnet\\RoleBasedAuth_App\\RoleBasedAuthorization\\RoleBasedAuthorization.csproj": {
+    "D:\\WorkSpace\\BE\\role-find-menu\\RoleBasedAuthorization.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\dotnet\\RoleBasedAuth_App\\RoleBasedAuthorization\\RoleBasedAuthorization.csproj",
+        "projectUniqueName": "D:\\WorkSpace\\BE\\role-find-menu\\RoleBasedAuthorization.csproj",
         "projectName": "RoleBasedAuthorization",
-        "projectPath": "E:\\dotnet\\RoleBasedAuth_App\\RoleBasedAuthorization\\RoleBasedAuthorization.csproj",
-        "packagesPath": "C:\\Users\\tranh\\.nuget\\packages\\",
-        "outputPath": "E:\\dotnet\\RoleBasedAuth_App\\RoleBasedAuthorization\\obj\\",
+        "projectPath": "D:\\WorkSpace\\BE\\role-find-menu\\RoleBasedAuthorization.csproj",
+        "packagesPath": "C:\\Users\\Windows\\.nuget\\packages\\",
+        "outputPath": "D:\\WorkSpace\\BE\\role-find-menu\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\tranh\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Windows\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -77,6 +77,10 @@
             "System.Configuration.ConfigurationManager": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "bootstrap": {
+              "target": "Package",
+              "version": "[5.3.3, )"
             }
           },
           "imports": [
@@ -98,7 +102,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
