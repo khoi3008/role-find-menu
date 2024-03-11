@@ -30,6 +30,8 @@ namespace RoleBasedAuthorization
             services.AddRazorPages();
             services.AddMemoryCache();
             services.AddSession();
+            services.AddHttpContextAccessor();
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddDbContext<Ikasecurity3pContext>(options =>

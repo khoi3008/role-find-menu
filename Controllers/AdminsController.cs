@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Konscious.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +16,15 @@ namespace RoleBasedAuthorization.Controllers
 {
     public class AdminsController : Controller
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
 
         private readonly Ikasecurity3pContext _db;
-        public AdminsController(Ikasecurity3pContext db)
+        public AdminsController(Ikasecurity3pContext db, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
+            _httpContextAccessor = httpContextAccessor;
+
         }
 
         public async Task<IActionResult> Index()
@@ -49,21 +55,22 @@ namespace RoleBasedAuthorization.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("FullName,UserName,Email,Password")] TblUserAccount userAccount, string[] roles)
+        public async Task<IActionResult> Create(string Password, [Bind("FullName,UserName,Email")] TblUserAccount userAccount, string[] roles)
         {
+            string passwordHash = HashPassword(Password);
 
-            _db.Add(userAccount);
+            userAccount.PasswordHash = passwordHash;
+
+            _db.TblUserAccounts.Add(userAccount);
             await _db.SaveChangesAsync();
-
             string userId = userAccount.UserName;
 
             foreach (var roleName in roles)
             {
-
                 var role = _db.TblUserRoles.FirstOrDefault(r => r.RoleName == roleName);
                 if (role != null)
                 {
-                    _db.TblUserRoles.Add(new TblUserRole {UserName = userId, RoleName = role.RoleName });
+                    _db.TblUserRoles.Add(new TblUserRole { UserName = userId, RoleName = role.RoleName });
                 }
             }
             await _db.SaveChangesAsync();
@@ -71,14 +78,26 @@ namespace RoleBasedAuthorization.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // [AuthorizedAction]
-        // public IActionResult Edit()
-        // {
-        //     string user_name = HttpContext.Request.Query["UserName"];
-        //     var userAccount = _db.TblUserAccounts.FirstOrDefaultAsync(s => s.UserName == user_name);
-        //     ViewBag.UserName = user_name;
-        //     return View();
-        // }
+        private static void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
+        {
+            if (password == null) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = Convert.ToBase64String(hmac.Key);
+                passwordHash = Convert.ToBase64String(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)));
+            }
+        }
+
+        [AuthorizedAction]
+        public IActionResult Edit()
+        {
+            string user_name = HttpContext.Request.Query["UserName"]!;
+            var userAccount = _db.TblUserAccounts.FirstOrDefaultAsync(s => s.UserName == user_name);
+            ViewBag.UserName = user_name;
+            return View();
+        }
 
         // [HttpPost]
         // public async Task<IActionResult> Edit(string user_name, [Bind("FullName,Email")] TblUserAccount userAccounts)
@@ -143,36 +162,32 @@ namespace RoleBasedAuthorization.Controllers
         [HttpGet]
         public IActionResult ResetPassword()
         {
-            string userEmail = HttpContext.Request.Query["userEmail"];
-            ViewBag.UserEmail = userEmail;
+            string userEmail = _httpContextAccessor.HttpContext.Session.GetString("email");
+            Console.WriteLine($" email cua session la :{userEmail}");
+            ViewBag.Email = userEmail;
             return View();
         }
 
+
         [HttpPost]
         [AuthorizedAction]
-        public async Task<IActionResult> ResetPassword(string userEmail, string passwordNew)
+        public async Task<IActionResult> ResetPassword(string passwordOld, string passwordNew, string userEmail, TblUserAccount userAccount)
         {
-            if (userEmail != null)
+            if (string.IsNullOrWhiteSpace(passwordOld) || string.IsNullOrWhiteSpace(passwordNew) || string.IsNullOrWhiteSpace(userEmail))
             {
-                var user = await _db.TblUserAccounts.FirstOrDefaultAsync(u => u.Email == userEmail);
-                if (user != null)
-                {
-                    user.PasswordHash = HashPassword(passwordNew);
-                    _db.Update(user);
-                    await _db.SaveChangesAsync();
-                    return Ok("Reset Password Complete");
-                }
-                else
-                {
-                    return NotFound("User not found.");
-                }
+                return BadRequest("Password, new password, and user email cannot be null or empty");
             }
-            else
-            {
-                return BadRequest("User email is required.");
-            }
-        }
 
+            var user = await _db.TblUserAccounts.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user != null && VerifyPasswordHash(passwordOld, user.PasswordHash))
+            {
+                user.PasswordHash = HashPassword(passwordNew);
+                await _db.SaveChangesAsync();
+                return Ok("Reset Password Completed");
+            }
+
+            return BadRequest("Invalid Email or Password");
+        }
 
 
         private string HashPassword(string password)
@@ -181,10 +196,28 @@ namespace RoleBasedAuthorization.Controllers
             hasher.Iterations = 1;
             hasher.MemorySize = 4096;
             hasher.DegreeOfParallelism = 1;
-            byte[] hashByte = hasher.GetBytes(32);
-            string hashString = Convert.ToBase64String(hashByte);
+            byte[] hashBytes = hasher.GetBytes(32);
+            string hashString = Convert.ToBase64String(hashBytes);
             return hashString;
         }
+
+        private bool VerifyPasswordHash(string password, string storedPasswordHash)
+        {
+            if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(storedPasswordHash))
+            {
+                return false;
+            }
+
+            byte[] storedHashBytes = Convert.FromBase64String(storedPasswordHash);
+            var hasher = new Argon2id(Encoding.UTF8.GetBytes(password));
+            hasher.Iterations = 1;
+            hasher.MemorySize = 4096;
+            hasher.DegreeOfParallelism = 1;
+            byte[] inputHashBytes = hasher.GetBytes(32);
+            return storedHashBytes.SequenceEqual(inputHashBytes);
+        }
+
+
     }
 }
 

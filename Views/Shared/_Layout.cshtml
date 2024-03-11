@@ -86,7 +86,7 @@
 
 
                 </ul>
-                <div style="display: flex; padding-top: 60%; align-items: center">
+                <div style="display: flex; padding-top: 60%; align-items: center; position: absolute;">
                     <div style="padding-right: 10px; border-radius: 5%;">
                         <img width="40" style="border-radius: 50%;" src="http://ikachi.hyec.vn/assets/avartar-empty.jpg"
                             alt="">
@@ -95,8 +95,8 @@
 
                     <div class="dropup">
                         <a>@(HttpContextAccessor?.HttpContext?.Session.GetString("UserName"))</a>
-                        <button class="btn btn-primary btn-xs" dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-primary btn-xs" dropdown-toggle" type="button" id="dropdownMenu2"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
@@ -161,9 +161,13 @@
                         window.location.href = url;
                     },
                     error: function (xhr, status, error) {
-                        window.location.href = "Admins/Error";
+                        if (status == 404) {
+                            window.location.href = "Admins/Error";
+                        }
+                          window.location.href = "Admins/Error";
+
                     }
-                });
+                }); 11
             });
         });
     });

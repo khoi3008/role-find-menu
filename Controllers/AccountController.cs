@@ -150,7 +150,6 @@ namespace RoleBasedAuthorization.Controllers
                 hasher.Iterations = 1;
                 hasher.MemorySize = 4096;
                 hasher.DegreeOfParallelism = 1;
-
                 byte[] inputHashBytes = hasher.GetBytes(32);
                 return storedHashBytes.SequenceEqual(inputHashBytes);
             }
@@ -166,7 +165,7 @@ namespace RoleBasedAuthorization.Controllers
             if (menu.Length > 0)
             {
                 StringBuilder quickAccessBuilder = new StringBuilder();
-                GenerateQuickAccess(menu, table, quickAccessBuilder);
+                GenerateQuickAccess(menu, table, quickAccessBuilder,  UserName);
                 sb.Append("<ul class='quick-access-menu'>");
                 sb.Append(quickAccessBuilder.ToString());
                 sb.Append("</ul>");
@@ -200,7 +199,7 @@ namespace RoleBasedAuthorization.Controllers
             }
             return sb.ToString();
         }
-        private void GenerateQuickAccess(DataRow[] menu, DataTable table, StringBuilder quickAccessBuilder)
+        private void GenerateQuickAccess(DataRow[] menu, DataTable table, StringBuilder quickAccessBuilder , string username)
         {
             foreach (DataRow dr in menu)
             {
@@ -216,11 +215,13 @@ namespace RoleBasedAuthorization.Controllers
                         string name = childMenus1["Name"].ToString()!;
                         string url = childMenus1["Url"].ToString()!;
                         string icon = childMenus1["Icon"].ToString()!;
-                        string line = $" <li style='padding : 20px '><a href='{url}'><i class='{icon}'></i> <span style='color:  #525f5e'>{name}</span></a></li>";
+                        string functionName = dr["FunctionName"].ToString()!;
+                        string NameEng = dr["NameEng"].ToString()!;
+                        string line = $" <li style='padding : 20px '><a   href='{url}'><i class='{icon}'></i> <span style='color:  #525f5e'>{name}</span></a></li>";
                         quickAccessBuilder.Append(line);
                     }
                 }
-                GenerateQuickAccess(childMenus, table, quickAccessBuilder);
+                GenerateQuickAccess(childMenus, table, quickAccessBuilder,username);
             }
         }
 
